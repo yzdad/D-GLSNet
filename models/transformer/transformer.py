@@ -5,12 +5,12 @@ from .linear_attention import LinearAttention, FullAttention
 from .factory import build_act_layer, build_dropout_layer
 
 
-class LoFTREncoderLayer(nn.Module):
+class TransformerLayer(nn.Module):
     def __init__(self,
                  d_model,
                  nhead,
                  attention='linear'):
-        super(LoFTREncoderLayer, self).__init__()
+        super(TransformerLayer, self).__init__()
 
         self.dim = d_model // nhead
         self.nhead = nhead
@@ -122,7 +122,6 @@ class SelfEncoderLayer(nn.Module):
 
 
 class LocalFeatureTransformer(nn.Module):
-    """A Local Feature Transformer (LoFTR) module."""
 
     def __init__(self, config):
         super(LocalFeatureTransformer, self).__init__()
@@ -131,7 +130,7 @@ class LocalFeatureTransformer(nn.Module):
         self.d_model = config['d_model']
         self.nhead = config['nhead']
         self.layer_names = config['layer_names']
-        encoder_layer = LoFTREncoderLayer(config['d_model'], config['nhead'], config['attention'])
+        encoder_layer = TransformerLayer(config['d_model'], config['nhead'], config['attention'])
         self.layers = []
         for i in self.layer_names:
             if i == 'self':
@@ -180,7 +179,6 @@ class LocalFeatureTransformer(nn.Module):
 
 
 class SelfTransformer(nn.Module):
-    """A Local Feature Transformer (LoFTR) module."""
 
     def __init__(self, config):
         super(SelfTransformer, self).__init__()

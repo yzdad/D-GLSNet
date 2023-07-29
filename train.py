@@ -22,7 +22,7 @@ import yaml
 import argparse
 from pathlib import Path
 
-from models.CrossLoFTR import CrossLoFTR
+from models.DGLSNet import DGLSNet
 
 import pprint
 import torch

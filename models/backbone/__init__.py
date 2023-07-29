@@ -11,7 +11,7 @@ def build_backbone_2d(config):
     # elif config['backbone_type_2d'] == 'BasicBlock_deform':
     #     return ResNetFPN_16_4_deform(config['resnetfpn_2d'])
     else:
-        raise ValueError(f"LOFTR.BACKBONE_TYPE {config['backbone_type_2d']} not supported.")
+        raise ValueError(f"BACKBONE_TYPE {config['backbone_type_2d']} not supported.")
 
 
 def build_backbone_3d(config):
@@ -22,4 +22,4 @@ def build_backbone_3d(config):
     elif config['backbone_type_3d'] == 'KPConvFPN_Kitti_down_up':
         return KPConvFPN_Kitti_down_up(**config['kpCovfpn'])
     else:
-        raise ValueError(f"LOFTR.BACKBONE_TYPE {config['backbone_type']} not supported.")
+        raise ValueError(f"BACKBONE_TYPE {config['backbone_type']} not supported.")

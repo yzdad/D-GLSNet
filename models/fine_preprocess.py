@@ -68,7 +68,7 @@ class FinePreprocess(nn.Module):
         ), data['p_ids'].long()]
         # print(feat_image_unfold.shape, feat_point_unfold.shape)
 
-        # option: use coarse-level loftr feature as context: concat and linear
+        # option: use coarse-level  feature as context: concat and linear
         if self.cat_c_feat:
             # [n_i+n_p, c]
             feat_image_c_ = self.down_proj(

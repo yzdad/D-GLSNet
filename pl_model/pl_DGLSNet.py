@@ -33,9 +33,9 @@ def getModelSize(model):
     print('model size: {:.3f}MB'.format(all_size))
     return (param_size, param_sum, buffer_size, buffer_sum, all_size)
 
-class pl_kittiCrossLoFTR(LightningModule, ABC):
+class pl_DGLSNet(LightningModule, ABC):
     def __init__(self, cfg):
-        print("\033[31m---------pl_kittiCrossLoFTR init----------\033[0m")
+        print("\033[31m---------pl_DGLSNet init----------\033[0m")
         super().__init__()
         self.cfg = cfg
 
@@ -69,7 +69,7 @@ class pl_kittiCrossLoFTR(LightningModule, ABC):
         for i in loss_list:
             self.loss = factory.loss_loader(i, **self.cfg["loss"][i])
 
-        print("\033[31m---------pl_kittiCrossLoFTR init finish----------\033[0m")
+        print("\033[31m---------pl_DGLSNet init finish----------\033[0m")
         print()
 
     def forward(self, x):

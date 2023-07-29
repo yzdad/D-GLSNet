@@ -11,9 +11,9 @@ from .fine_matching import FineMatching
 import time
 
 
-class CrossLoFTR(nn.Module):
+class DGLSNet(nn.Module):
     def __init__(self, **config):
-        super(CrossLoFTR, self).__init__()
+        super(DGLSNet, self).__init__()
         # fig
         self.cfg = config
 
@@ -30,7 +30,7 @@ class CrossLoFTR(nn.Module):
         self.coarse_matching = CoarseMatching(config['crossMatch'])
 
         self.fine_preprocess = FinePreprocess(config['fine_preprocess'])
-        self.loftr_fine = LocalFeatureTransformer(config["fineTransformer"])
+        self.fine_transformer = LocalFeatureTransformer(config["fineTransformer"])
         self.fine_matching = FineMatching()
 
     def forward(self, data):
@@ -72,7 +72,7 @@ class CrossLoFTR(nn.Module):
 
         # at least one coarse level predicted
         if feat_image_unfold.shape[0] != 0:
-            feat_image_unfold, feat_point_unfold = self.loftr_fine(feat_image_unfold, feat_point_unfold)
+            feat_image_unfold, feat_point_unfold = self.fine_transformer(feat_image_unfold, feat_point_unfold)
 
         self.fine_matching(feat_image_unfold, feat_point_unfold, data)
         torch.cuda.synchronize()

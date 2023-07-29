@@ -29,7 +29,7 @@ data:
   precompute_data: True
 
 model:
-  name: 'CrossLoFTR'
+  name: 'DGLSNet'
   #########################
   backbone:
     backbone_type_2d: 'ResNetFPN'
@@ -112,7 +112,7 @@ optimizer:
   warmup_step: 20000
 
 loss:
-  LoFTRLoss:
+  MatchLoss:
     pre_weight: 0.5
     coarse_weight: 1.0
     coarse_type: 'focal'
