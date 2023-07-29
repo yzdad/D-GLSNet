@@ -1,0 +1,130 @@
+pretrained: '/media/yzdad/datasets/数据包/Medium(4,2).ckpt'
+run_path: '/media/yzdad/datasets/run/D-GLSNet'
+
+workers_train: 6
+workers_val: 6
+workers_test: 1
+
+batch_size: 1
+eval_batch_size: 1
+test_batch_size: 1
+
+max_epochs: 100
+
+
+data:
+  dataset: Kitti
+  dataset_root: '/media/yzdad/datasets/数据包/sample'
+  point_limit: 30000
+  use_augmentation: False
+  augmentation_noise: 0.00  # test的时候最好关掉
+  augmentation_rotation: 1.0
+  #
+  batch_image: 1
+  image_size: 480
+  # 和backbone_type_3d相关
+  num_stages: 5
+  voxel_size: 0.3
+  search_radius: 1.275  # n * voxel_size,n = 2.5/3
+  precompute_data: True
+
+model:
+  name: 'CrossLoFTR'
+  #########################
+  backbone:
+    backbone_type_2d: 'ResNetFPN'
+    resolution_2d: '16_4'
+    scale: 16  # okkk
+    resnetfpn_2d:
+      initial_dim: 128
+      block_dims: [ 128, 256, 256, 256 ]  # s1, s2, s3 = d_model
+
+    backbone_type_3d: 'KPConvFPN_Kitti_down_up' 
+    kpCovfpn:
+      input_dim: 1
+      init_dim: 64  # 64
+      block_dims: [ 128, 256, 512, 1024 ]  # s1, s2, s3 = d_model
+
+      group_norm: 32  # 要保证 init_dim / 2 % group_norm == 0 和 block_dims / 2 % group_norm == 0
+      kernel_size: 15  # 卷积核点数
+      init_radius: 1.275  #   same as data->search_radius
+      init_sigma: 0.6  # 2 * voxel_size
+
+  ############################
+  coarseTransformer:
+    d_model: 256
+    pos_encoding_2d:
+      shape: [ 30, 30 ]
+    pos_encoding_3d:
+      type: 'EncodingSine_xy'
+
+      Geometric:
+        sigma_d: 0.3  # 0.2
+        sigma_a: 15
+        angle_k: 3
+        reduction_a: 'max'
+
+      CoordsSine:
+        temperature: 10000.0
+        scale: 0.02  # TODO
+
+    nhead: 8
+    attention: 'linear'  # options: ['linear', 'full']
+    layer_names: [ 'self', 'cross', 'self', 'cross' , 'self', 'cross', 'self', 'cross' ]
+
+  ##########################
+  crossMatch:
+    temperature: 0.01  # TODO
+    match_type: 'sinkhorn'  #  ['dual_softmax, 'sinkhorn']
+    thr: 0.5  # TODO
+    train_coarse_percent: 0.8
+    train_pad_num_gt_min: 40
+    border_rm: 1
+  
+  #############################
+  fine_preprocess:
+    d_model: 256
+    d_model_f: 256
+    fine_concat_coarse_feat: Ture
+    fine_window_size: 8
+  fineTransformer:
+    d_model: 256
+    nhead: 8
+    attention: 'linear'  # options: ['linear', 'full']
+    layer_names: [ 'self', 'cross' ,'self', 'cross' ]
+
+optimizer:
+  name: "adamw"
+  canonical_lr: 0.00005
+  ture_lr: 0.00005
+  adam_decay: 0
+  adamw_decay: 0.1
+
+  scheduler: 'MultiStepLR'  # [MultiStepLR, CosineAnnealing, ExponentialLR]
+  scheduler_interval: 'epoch'    # [epoch, step]
+  mslr_milestones: [ 8, 10, 15 ]  # MSLR: MultiStepLR
+  mslr_gamma: 0.5  # 0.3x
+  cosa_tmax: 30  # COSA: CosineAnnealing
+  elr_camma: 0.999992  # ELR: ExponentialLR, this value for 'step' interval
+
+  warmup_type: 'linear'
+  warmup_ratio: 0
+  warmup_step: 20000
+
+loss:
+  LoFTRLoss:
+    pre_weight: 0.5
+    coarse_weight: 1.0
+    coarse_type: 'focal'
+    focal_alpha: 0.25
+    focal_gamma: 2.0
+    pos_weight: 1.0
+    neg_weight: 1.0
+    sparse_spvs: True
+
+    fine_type:  'l2_with_std'  # ['l2_with_std', 'l2']
+    correct_thr: 1.0
+    fine_weight: 1.0
+
+
+
