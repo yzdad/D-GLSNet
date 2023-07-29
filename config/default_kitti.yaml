@@ -17,12 +17,11 @@ data:
   dataset_root: '/media/yzdad/datasets/数据包/sample'
   point_limit: 30000
   use_augmentation: False
-  augmentation_noise: 0.00  # test的时候最好关掉
+  augmentation_noise: 0.001
   augmentation_rotation: 1.0
-  #
+
   batch_image: 1
   image_size: 480
-  # 和backbone_type_3d相关
   num_stages: 5
   voxel_size: 0.3
   search_radius: 1.275  # n * voxel_size,n = 2.5/3
@@ -45,8 +44,8 @@ model:
       init_dim: 64  # 64
       block_dims: [ 128, 256, 512, 1024 ]  # s1, s2, s3 = d_model
 
-      group_norm: 32  # 要保证 init_dim / 2 % group_norm == 0 和 block_dims / 2 % group_norm == 0
-      kernel_size: 15  # 卷积核点数
+      group_norm: 32  # init_dim / 2 % group_norm == 0 and block_dims / 2 % group_norm == 0
+      kernel_size: 15  
       init_radius: 1.275  #   same as data->search_radius
       init_sigma: 0.6  # 2 * voxel_size
 

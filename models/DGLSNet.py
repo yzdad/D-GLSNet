@@ -37,7 +37,7 @@ class DGLSNet(nn.Module):
         torch.cuda.synchronize()
         start = time.time()
         #  ============================ backbone ================================
-        # with torch.no_grad():  # 冻结
+        # with torch.no_grad():  # 
         feats_image_c, feats_image_f = self.image_backbone(data['image'])  # [B, C_c, h_c, w_c] and [B, C_f, h_f, w_f]
         feats_point_c, feats_point_f = self.point_backbone(feats=data['features'].detach(), data_dict=data)  # [B, N_c, C_c] and [B, N_f, C_f]
 

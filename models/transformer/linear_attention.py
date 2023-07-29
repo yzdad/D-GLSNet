@@ -42,7 +42,7 @@ class LinearAttention(Module):
         v_length = values.size(1)
         values = values / v_length  # prevent fp16 overflow
         KV = torch.einsum("nshd,nshv->nhdv", K, values)  # (S,D)' @ S,V
-        Z = 1 / (torch.einsum("nlhd,nhd->nlh", Q, K.sum(dim=1)) + self.eps)  # 归一化
+        Z = 1 / (torch.einsum("nlhd,nhd->nlh", Q, K.sum(dim=1)) + self.eps)  #
         queried_values = torch.einsum("nlhd,nhdv,nlh->nlhv", Q, KV, Z) * v_length
 
         return queried_values.contiguous()

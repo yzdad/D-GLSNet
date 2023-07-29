@@ -1,21 +1,3 @@
-#    YZDAD (li laijian)
-#       ┏┓     ┏┓
-#     ┏━┛┻━━━━━┛┻━┓
-#     ┃           ┃
-#     ┃     ━     ┃
-#     ┃  ┳┛   ┗┳  ┃
-#     ┃           ┃
-#     ┃     ┻     ┃
-#     ┃           ┃
-#     ┗━┓       ┏━┛  Codes are far away from bugs with the animal protecting
-#       ┃       ┃    神兽保佑,代码无bug
-#       ┃       ┃
-#       ┃       ┗━━━┓
-#       ┃           ┣┓
-#       ┃　　　　    ┏┛
-#       ┗┓┓┏━━━━━┳┓┏┛
-#        ┃┫┫     ┃┫┫
-#        ┗┻┛     ┗┻┛
 import os
 import shutil
 import yaml
@@ -68,24 +50,15 @@ if __name__ == '__main__':
     print("config file: {0}".format(args.config))
     print("\033[31m---------Parser {0} end------\033[0m".format(args.command))
     print()
-    # rank_zero_only(pprint.pprint)(vars(args))  # 当线程执行数据美化输出
+    # rank_zero_only(pprint.pprint)(vars(args))  # 
 
-    # 加载和保存配置文件
+    # 
     with open(args.config, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     if args.test or args.eval:
         config['model']['crossMatch']['train'] = False
     else:
          config['model']['crossMatch']['train'] = True
-    # TODO
-    # args.gpus = _n_gpus = setup_gpus(args.gpus)  # GPU数
-    # config.TRAINER.WORLD_SIZE = _n_gpus * args.num_nodes  # 全部设备 num_gpu * num_nodes???
-    # config.TRAINER.TRUE_BATCH_SIZE = config.TRAINER.WORLD_SIZE * args.batch_size  # 总的batch数量
-    # _scaling = config.TRAINER.TRUE_BATCH_SIZE / config.TRAINER.CANONICAL_BS  # 设置的batch与默认的比值
-    # config.TRAINER.SCALING = _scaling
-    # config.TRAINER.TRUE_LR = config.TRAINER.CANONICAL_LR * _scaling  # 据据比值调整学习率
-    # config.TRAINER.WARMUP_STEP = math.floor(config.TRAINER.WARMUP_STEP / _scaling)  # 调整warmup的阈值步伐
-
     #
     output_dir = os.path.join(config['run_path'], args.exper_name)
     os.makedirs(output_dir, exist_ok=True)
@@ -98,20 +71,20 @@ if __name__ == '__main__':
 
     ####################################################################################################################
     torch.set_default_tensor_type(torch.FloatTensor)
-    if config['pretrained']:  # 加载这个地方学习一些 tandem
+    if config['pretrained']:  #
         print("\033[32mpretrained: {0}\033[0m".format(config['pretrained']))
         state = torch.load(config['pretrained'])
         model = args.model(config)
         model.load_state_dict(state_dict=state['state_dict'], strict=False)
-        # 下面这个写法训练会变慢
+
         # model = args.model.load_from_checkpoint(checkpoint_path=config['pretrained'], cfg=config,
         #                                         test_save_path=predictions_path)
     else:
         model = args.model(config)
 
-    # 通过监控数量定期保存模型
+
     checkpoint_path = gp.get_checkpoint_path(output_dir)
-    # shutil.rmtree(checkpoint_path)  # 删除文件
+    # shutil.rmtree(checkpoint_path)  # 
     checkpoint_callback = ModelCheckpoint(
         monitor="val_loss", mode='min',
         dirpath=checkpoint_path,
@@ -121,9 +94,9 @@ if __name__ == '__main__':
         save_last=True,
         every_n_epochs=1,
     )
-    # 进度条
+    # 
     bar = TQDMProgressBar(refresh_rate=10)
-    # 记录器
+    # 
     logger = TensorBoardLogger(gp.get_logger_path(output_dir), name="")
     # trainer
     trainer = Trainer(
@@ -132,7 +105,7 @@ if __name__ == '__main__':
         max_epochs=config['max_epochs'],
         callbacks=[bar, checkpoint_callback],
         logger=logger,
-        log_every_n_steps=10,  # Lightning 每 50 行或 50 个训练步骤记录一次
+        log_every_n_steps=10,  # Lightning
         # strategy="ddp",
         strategy="ddp_spawn",
     )
@@ -149,4 +122,4 @@ if __name__ == '__main__':
         trainer.test(model)
     else:
         trainer.fit(model)
-        # trainer.fit(model, ckpt_path="some/path/to/my_checkpoint.ckpt")  # 恢复完整的训练,和加载整个模型一样训练会变慢
+        # trainer.fit(model, ckpt_path="some/path/to/my_checkpoint.ckpt")  # 

@@ -22,7 +22,7 @@ def get_model(name):
         name : the name of models to load
     """
     mod = __import__('models.{}'.format(name), fromlist=[''])
-    return getattr(mod, name)  # 返回一个对象属性值
+    return getattr(mod, name)  # 
 
 
 def model_loader(model='SuperPointNet', **options):
@@ -42,7 +42,7 @@ def get_loss(name):
         name : the name of models to load
     """
     mod = __import__('loss.{}'.format(name), fromlist=[''])
-    return getattr(mod, name)  # 返回一个对象属性值
+    return getattr(mod, name)  # 
 
 
 def loss_loader(model='DetectorLoss', **options):

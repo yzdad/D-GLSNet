@@ -15,7 +15,7 @@ def precompute_data_stack_mode(points, lengths, num_stages, voxel_size, radius, 
     subsampling_list = []
     upsampling_list = []
 
-    # grid subsampling 点云下采样
+    # grid subsampling 
     for i in range(num_stages):
         if i > 0:
             points, lengths = grid_subsample(points, lengths, voxel_size=voxel_size)
@@ -94,12 +94,12 @@ def registration_collate_fn_stack_mode(
         collated_dict (Dict)
     """
     batch_size = len(data_dicts)
-    # merge data with the same key from different samples into a list 合并
+    # merge data with the same key from different samples into a list 
     collated_dict = {}
     for data_dict in data_dicts:
         for key, value in data_dict.items():
             if isinstance(value, np.ndarray):
-                value = torch.from_numpy(value)  # 转torch
+                value = torch.from_numpy(value)  
             if key not in collated_dict:
                 collated_dict[key] = []
             collated_dict[key].append(value)
@@ -150,7 +150,7 @@ def calibrate_neighbors_stack_mode(
         dataset, collate_fn, num_stages, voxel_size, search_radius, keep_ratio=0.8, sample_threshold=20000
 ):
     # Compute higher bound of neighbors number in a neighborhood
-    hist_n = int(np.ceil(4 / 3 * np.pi * (search_radius / voxel_size + 1) ** 3))  # 园体积公式
+    hist_n = int(np.ceil(4 / 3 * np.pi * (search_radius / voxel_size + 1) ** 3))  
     neighbor_hists = np.zeros((num_stages, hist_n), dtype=np.int32)
     max_neighbor_limits = [hist_n] * num_stages  # list
 
@@ -165,7 +165,7 @@ def calibrate_neighbors_stack_mode(
         hists = [np.bincount(c, minlength=hist_n)[:hist_n] for c in counts]
         neighbor_hists += np.vstack(hists)
 
-        if np.min(np.sum(neighbor_hists, axis=1)) > sample_threshold:  # 超过设置的采样阈值
+        if np.min(np.sum(neighbor_hists, axis=1)) > sample_threshold: 
             break
 
     cum_sum = np.cumsum(neighbor_hists.T, axis=0)

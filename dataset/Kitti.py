@@ -29,46 +29,35 @@ from utils.pointcloud import (
 )
 
 class Kitti(torch.utils.data.Dataset):
-    """
-    读取MegaDepth数据集
-    """
 
     def __init__(self, seed=None, task='test', transform=None, **config):
-        """
-        :param dataset_root: 数据根目录
-        :param task: ['train', 'val' , 'test']
-        :param point_limit:  点云大小限制
-        :param use_augmentation:  使用点云加强
-        :param augmentation_noise:  使用噪声
-        :param augmentation_rotation:  使用旋转变化
-        """
         super(Kitti, self).__init__()
         self.config = config
-        # 设置路径
+        # 
         self.dataset_root = Path(config['dataset_root'])
         self.dataset_path = self.dataset_root
         self.datast_split = self.dataset_root / (task + '.txt')
         # 'train','val','test'
         self.subset = task
-        # 图像大小 half_size
+        #  half_size
         self.hs = config['image_size'] // 2
-        # 点云点数
+        # 
         self.point_limit = config['point_limit']
-        # 噪声和变化
+        # 
         self.use_augmentation = config['use_augmentation']
         self.aug_noise = config['augmentation_noise']
         self.aug_rotation = config['augmentation_rotation']
         # image aug
         self.aug = iaa.Sequential([
             iaa.Sometimes(0.5, iaa.Add((-30, 30))),
-            iaa.Sometimes(0.5, iaa.LinearContrast((0.7, 1.3))),  # 对比度增强器 1.5
-            iaa.Sometimes(0.5, iaa.AdditiveGaussianNoise(scale=(0, 8))),  # 高斯噪声
-            iaa.Sometimes(0.5, iaa.ImpulseNoise(p=(0, 0.003))),  # 脉冲噪声 0.0035
-            iaa.Sometimes(0.5, iaa.MotionBlur(3)),  # 运动模糊
-            iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 1.5))),  # 高斯模糊
+            iaa.Sometimes(0.5, iaa.LinearContrast((0.7, 1.3))),  # 
+            iaa.Sometimes(0.5, iaa.AdditiveGaussianNoise(scale=(0, 8))),  #
+            iaa.Sometimes(0.5, iaa.ImpulseNoise(p=(0, 0.003))),  # 
+            iaa.Sometimes(0.5, iaa.MotionBlur(3)),  # 
+            iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 1.5))),  # 
         ])
 
-        # 加载list
+
         self.metadata_list = []
         self.source_point_pkg = open(
             self.datast_split).read().split('\n')[0:-1]
@@ -112,7 +101,7 @@ class Kitti(torch.utils.data.Dataset):
         ########################################## image ####################################
         image_rgb = pair_data['map_']
         focal = pair_data['focal']
-        # 旋转和平移rgb图片
+
         x, y = 0, 0
         rotation_z = Rotation.from_euler('xyz', [0, 0, 0]).as_matrix()
         if self.use_augmentation:
@@ -124,10 +113,10 @@ class Kitti(torch.utils.data.Dataset):
             
             x = int(np.random.uniform(-100, 100))
             y = int(np.random.uniform(-100, 100))
-        # 切割    
+        #     
         image_rgb = image_rgb[focal[1] - y -  self.hs:focal[1] - y +  self.hs, focal[0] + x -  self.hs:focal[0] + x +  self.hs]
         focal[0], focal[1] = (self.hs - x), (self.hs + y)
-        # 灰度图
+        # 
         image = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2GRAY)[..., np.newaxis]  # 
         if self.use_augmentation:
             image = self.aug.augment_image(image)

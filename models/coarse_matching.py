@@ -61,10 +61,10 @@ class CoarseMatching(nn.Module):
         self.temperature = config['temperature']
         self.thr = config['thr']
         self.border_rm = config['border_rm']
-        # 训练fine match
+        # fine match
         self.istraining = config['train']
-        self.train_coarse_percent = config['train_coarse_percent']  # 匹配对百分比
-        self.train_pad_num_gt_min = config['train_pad_num_gt_min']  # 最小的真值
+        self.train_coarse_percent = config['train_coarse_percent']  
+        self.train_pad_num_gt_min = config['train_pad_num_gt_min'] 
         if self.config['match_type'] == 'sinkhorn':
             self.score = nn.Parameter(torch.tensor(0.13, requires_grad=True))
 
@@ -89,7 +89,6 @@ class CoarseMatching(nn.Module):
             conf_matrix = F.softmax(sim_matrix / self.temperature, 1)
         else:
             sim_matrix = torch.einsum("nlc,nsc->nls", feat_c0, feat_c1) / self.temperature
-            # F.softmax(sim_matrix, 1) *   点对patch是会一对多的
             conf_matrix = F.softmax(sim_matrix, 1)
 
         data.update({'conf_matrix': conf_matrix})
@@ -132,7 +131,6 @@ class CoarseMatching(nn.Module):
         mask = mask * (conf_matrix == conf_matrix.max(dim=1, keepdim=True)[0])
 
         # 3. find all valid coarse matches
-        # 找每一列的最值，就是找true那个
         b_ids, i_ids, p_ids = torch.where(mask[:, 0:-1, :])
         mconf = conf_matrix[b_ids, i_ids, p_ids]
 
@@ -144,9 +142,9 @@ class CoarseMatching(nn.Module):
             # The sampling is performed across all pairs in a batch without manually balancing
             # #samples for fine-level increases w.r.t. batch_size
 
-            num_candidates_max = mask.size(0) * mask.size(2)  # 最大匹配数
+            num_candidates_max = mask.size(0) * mask.size(2)  # 
             num_matches_train = int(
-                num_candidates_max * self.train_coarse_percent)  # 用于fine训练的匹配数
+                num_candidates_max * self.train_coarse_percent)  # 
             num_matches_pred = len(b_ids)
             if self.train_pad_num_gt_min > num_matches_train:
                 num_matches_train += (self.train_pad_num_gt_min -
@@ -179,9 +177,9 @@ class CoarseMatching(nn.Module):
 
         # These matches is the current prediction (for visualization)
         coarse_matches.update({
-            # 'gt_mask': mconf == 0,  # 标记gt点
-            'uv_c_in_i': uv_c_in_i,  # 图像匹配点的坐标位置
-            'point_c_match': point_c_match,  # 点云匹配点
+            # 'gt_mask': mconf == 0,  # 
+            'uv_c_in_i': uv_c_in_i,  # 
+            'point_c_match': point_c_match,  # 
             'point_c_match_gt': data['spv_uv_i'][p_ids]
             # 'mconf': mconf
         })
@@ -218,7 +216,6 @@ class CoarseMatchingPrev(nn.Module):
         else:
             sim_matrix = torch.einsum(
                 "nlc,nsc->nls", feat_c0, feat_c1) / self.temperature
-            # F.softmax(sim_matrix, 1) *   点对patch是会一对多的
             conf_matrix = F.softmax(sim_matrix, 1)
 
         data.update({'conf_matrix_prev': conf_matrix})

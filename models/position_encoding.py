@@ -62,7 +62,7 @@ class PositionEncodingLearn(nn.Module):
     def __init__(self, d_model, shape=(30, 40)):
         super(PositionEncodingLearn, self).__init__()
 
-        y_position = torch.ones(shape).cumsum(0).float()  # [1, max_shape]  3维
+        y_position = torch.ones(shape).cumsum(0).float()  # [1, max_shape]  
         x_position = torch.ones(shape).cumsum(1).float()
 
         self.xy = (torch.stack([x_position, y_position], dim=-1).view(1, -1, 2).contiguous() - 0.5).detach()
@@ -218,7 +218,7 @@ class PositionEmbeddingCoordsSine(nn.Module):
         super().__init__()
 
         self.n_dim = n_dim
-        self.num_pos_feats = d_model // n_dim // 2 * 2  # 每个轴的维度
+        self.num_pos_feats = d_model // n_dim // 2 * 2  #
         self.temperature = temperature
         self.padding = d_model - self.num_pos_feats * self.n_dim
 
@@ -308,10 +308,10 @@ class PositionEmbeddingLearned_pointNet(nn.Module):
         T_feature = self.fstn(x)
         x = torch.bmm(x, T_feature)
 
-        # 点特征
+        # 
         pointfeat = x
 
-        # 全局特征
+        # 
         x = F.relu(self.l2(x))
         x = self.l3(x)
         x = torch.max(x, 1, keepdim=True)[0]

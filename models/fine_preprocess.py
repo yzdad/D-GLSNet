@@ -36,7 +36,7 @@ class FinePreprocess(nn.Module):
         data.update({'W': W})
         stride = data['scale_f_c']
 
-        if data['b_ids'].shape[0] == 0:  # 没有粗匹配对
+        if data['b_ids'].shape[0] == 0:  # 
             feat_image = torch.empty(
                 0, self.W**2, self.d_model_f, device=feat_image_f.device)  # [0, W^2, d_modle_f]
             feat_point = torch.empty(
@@ -46,7 +46,7 @@ class FinePreprocess(nn.Module):
         # 1. unfold(crop) all local windows
         # print(feat_image_f.shape)
         feat_image_unfold = F.unfold(feat_image_f, kernel_size=(
-            W, W), stride=stride, padding=W//2 - stride//2)  # 滑动窗口 [B, c ww, l]
+            W, W), stride=stride, padding=W//2 - stride//2)  #  [B, c ww, l]
         feat_image_unfold = rearrange(
             feat_image_unfold, 'n (c ww) l -> n l ww c', ww=W**2)
 

@@ -18,7 +18,7 @@ def mask_pts_at_padded_regions(grid_pt, mask):
 
 
 def compute_supervision_coarse_kitti(data, config):
-    """ 计算粗匹配监督信息
+    """ 
     Update:
 
 
@@ -33,8 +33,8 @@ def compute_supervision_coarse_kitti(data, config):
     # 1. misc
     device = data['image'].device
     N, _, H, W = data['image'].shape  # N = 1
-    scale = config['model']['backbone']['scale']  # 输入图片与粗匹配特征图的比例
-    h, w = map(lambda x: x // scale, [H, W])  # 粗特征大小
+    scale = config['model']['backbone']['scale']  # 
+    h, w = map(lambda x: x // scale, [H, W])  # 
 
     point_c = data['points'][-1]
     num_p = point_c.shape[0]
@@ -69,48 +69,15 @@ def compute_supervision_coarse_kitti(data, config):
         conf_matrix_gt = torch.zeros(h * w + 1, num_p, device=device)
         conf_matrix_gt[image_id, point_id] = 1
         sum_conf = torch.sum(conf_matrix_gt, dim=0)
-        conf_matrix_gt[h * w, torch.where(sum_conf == 0)[0]] = 1  # 垃圾袋
+        conf_matrix_gt[h * w, torch.where(sum_conf == 0)[0]] = 1 
     else:
         conf_matrix_gt = torch.zeros(h * w, num_p, device=device)
         conf_matrix_gt[image_id, point_id[0]] = 1
 
     data.update({'conf_matrix_gt': conf_matrix_gt.unsqueeze(0)})
 
-    # uu, vv = u / scale, v / scale
-    # uu_i, vv_i = uu.floor(), vv.floor()
-    # weight = torch.stack([(uu - uu_i) * (vv - vv_i), \
-    #                                               (uu_i + 1 -uu) * (vv - vv_i), \
-    #                                               (uu - uu_i) * (vv_i + 1 - vv),  \
-    #                                               (uu_i + 1 -uu) * (vv_i + 1 - vv)]).reshape(-1)
-    # xy = torch.stack([torch.stack([uu_i, vv_i], dim=-1), \
-    #                                     torch.stack([uu_i + 1, vv_i], dim=-1), \
-    #                                     torch.stack([uu_i, vv_i + 1], dim=-1),  \
-    #                                     torch.stack([uu_i + 1, vv_i + 1], dim=-1)]).long().reshape(-1, 2)
-
-    # index_xy = ~out_bound_mask(xy, w, h)
-    # point_id = torch.where(index_xy)[0]  % point_c.shape[0]
-    # image_point = xy[index_xy]
-    # weight = weight[index_xy]
-    # image_id = image_point[..., 0] + image_point[..., 1] * w
-
-    # if config['model']['crossMatch']['match_type'] == 'sinkhorn':
-    #     # pt_score =  torch.norm(torch.stack([u, v], dim=-1) / scale - pt - 0.5, dim=-1)
-
-    #     conf_matrix_gt = torch.zeros(h * w + 1, num_p, device=device)
-    #     conf_matrix_gt[image_id, point_id] = weight
-    #     sum_conf = torch.sum(conf_matrix_gt, dim=0)
-    #     conf_matrix_gt[h * w, :] = 1 -  sum_conf  # 垃圾袋
-    # else:
-    #     conf_matrix_gt = torch.zeros(h * w, num_p, device=device)
-    #     conf_matrix_gt[image_id, point_id[0]] = 1
-
-    # data.update({'conf_matrix_gt': conf_matrix_gt.unsqueeze(0)})
-
-    # # 用于fine
-    # pt_uv = torch.stack([u, v], dim=-1).round().long()
-
-    # 用于fine
-    index_ = ~out_bound_mask(pt_uv, W, H, b=scale)  # 去边缘
+    # 
+    index_ = ~out_bound_mask(pt_uv, W, H, b=scale)  
     point_id = torch.where(index_)[0]
     image_point = pt_uv[index_] // scale
     image_id = image_point[..., 0] + image_point[..., 1] * w
@@ -137,7 +104,7 @@ def compute_supervision_fine_kitti(data, config):
     # 1. misc
     # w_pt0_i, pt1_i = data.pop('spv_w_pt0_i'), data.pop('spv_pt1_i')
     w_uv_i, w_uv_c = data['point_c_match_gt'], data['uv_c_in_i']
-    scale = data['scale_i_f']  # 输入图片到f的尺度
+    scale = data['scale_i_f']  
     radius = config['model']['fine_preprocess']['fine_window_size'] // 2
 
     # 2. compute gt

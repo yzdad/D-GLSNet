@@ -39,7 +39,7 @@ class pl_DGLSNet(LightningModule, ABC):
         super().__init__()
         self.cfg = cfg
 
-        # data 工厂
+        # data 
         self.Dataset = factory.get_module('dataset', cfg['data']['dataset'])
 
         train_set = self.Dataset(task='train', **self.cfg['data'])
@@ -60,7 +60,7 @@ class pl_DGLSNet(LightningModule, ABC):
             precompute_data=self.cfg['data']['precompute_data'],
         )
 
-        # net 工厂
+        # net 
         self.net = factory.model_loader(
             model=cfg['model']["name"], **cfg['model'])
         getModelSize(self.net)
@@ -119,7 +119,7 @@ class pl_DGLSNet(LightningModule, ABC):
         losses = torch.stack(losses)
         loss = torch.mean(losses)
         # save model
-        self.log("val_loss", loss, sync_dist=True)  # 同时会写进记录器
+        self.log("val_loss", loss, sync_dist=True)  #
 
     def test_step(self, batch, batch_idx):
         batch['istraining'] = False
@@ -161,7 +161,7 @@ class pl_DGLSNet(LightningModule, ABC):
                 raise ValueError(
                     f'Unknown lr warm-up strategy: {self.config.TRAINER.WARMUP_TYPE}')
 
-        # 打印学习率
+        #
         count = 0
         for pg in optimizer.param_groups:
             self.logger.experiment.add_scalar(
@@ -236,7 +236,7 @@ class pl_DGLSNet(LightningModule, ABC):
             pin_memory=True,
             num_workers=self.cfg.get('workers_val', 1),
             worker_init_fn=worker_init_fn,
-            persistent_workers=True  # 每个epoch的第一个iteration是否重新初始化worker
+            persistent_workers=True  #
         )
         print()
         print('\033[32m--->workers_val {0} split size {1} in {2} batches\033[0m'.format(

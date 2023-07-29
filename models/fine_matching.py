@@ -25,8 +25,8 @@ class FineMatching(nn.Module):
                 'mkpts1_f' (torch.Tensor): [M, 2]}
         """
         M, WW, C = feat_image.shape
-        W = int(math.sqrt(WW))  # 图片窗口
-        scale = data['scale_i_f']  # 图片到粗特征的尺度
+        W = int(math.sqrt(WW))  # 
+        scale = data['scale_i_f']  # 
 
         self.M, self.W, self.WW, self.C, self.scale = M, W, WW, C, scale
 
@@ -40,7 +40,7 @@ class FineMatching(nn.Module):
             })
             return
 
-        feat_point_picked = feat_point[:, 0, :]  # 取最近点的特征
+        feat_point_picked = feat_point[:, 0, :]  # 
         sim_matrix = torch.einsum(
             'mc,mrc->mr', feat_point_picked, feat_image)  # [m, ww]
         softmax_temp = 1. / C**.5
@@ -49,11 +49,11 @@ class FineMatching(nn.Module):
 
         # compute coordinates from heatmap
         coords_normalized = dsnt.spatial_expectation2d(
-            heatmap[None], True)[0]  # [M, 2] (x,y) 得到期望的坐标
+            heatmap[None], True)[0]  # [M, 2] (x,y) 
         grid_normalized = create_meshgrid(
             W, W, True, heatmap.device).reshape(1, -1, 2)  # [1, WW, 2]
 
-        # compute std over <x, y>  平方的期望减掉期望的平方
+        # compute std over <x, y>  
         var = torch.sum(grid_normalized**2 * heatmap.view(-1,
                         WW, 1), dim=1) - coords_normalized**2  # [M, 2]
         # [M]  clamp needed for numerical stability

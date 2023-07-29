@@ -50,6 +50,8 @@ Modify the `run_path` in the configuration file **default_kitti.yaml** to modify
 CUDA_VISIBLE_DEVICES=0 python train.py pl_DGLSNet ./config/default_kitti.yaml kitt_train
 ```
 
+* 
+
 ## Test
 
 Modify `pretrained` in the default_kitti.yaml file to load the corresponding model. Use the following command for testing.

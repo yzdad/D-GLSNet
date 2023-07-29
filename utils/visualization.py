@@ -109,7 +109,7 @@ def show_match_kitti_2d(batch, bound=10):
 
     # color
     match_num = uv_i_i.shape[0]
-    color_match = np.random.random((match_num, 3)) - 0.2  # 匹配点的颜色
+    color_match = np.random.random((match_num, 3)) - 0.2  #
 
     # images
     H, W = image.shape[0], image.shape[1]
@@ -140,7 +140,7 @@ def show_match_kitti_2d(batch, bound=10):
     flag = ~index
     points_u_v = points_u_v[flag]
 
-    # 根据高度生成色彩
+    # 
     colors = np.zeros([point.shape[0], 3])
     height_max = np.max(point[:, 2]) * 0.9
     height_min = np.min(point[:, 2]) * 0.9
@@ -191,7 +191,7 @@ def show_match_kitti_2d_h(batch, bound=10):
 
     # color
     match_num = uv_i_i.shape[0]
-    color_match = np.random.random((match_num, 3)) - 0.2  # 匹配点的颜色
+    color_match = np.random.random((match_num, 3)) - 0.2  # 
 
     # images
     H, W = image.shape[0], image.shape[1]
@@ -219,7 +219,7 @@ def show_match_kitti_2d_h(batch, bound=10):
     flag = ~index
     points_u_v = points_u_v[flag]
 
-    # 根据高度生成色彩
+    #
     colors = np.zeros([point.shape[0], 3])
     height_max = np.max(point[:, 2]) * 0.9
     height_min = np.min(point[:, 2]) * 0.9
