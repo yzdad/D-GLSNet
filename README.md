@@ -2,7 +2,7 @@
 The code of Geo-localization with Transformer-based 2D-3D match Network
 
 ## Introduction
-D-GLSNet is a Transformer-based 2D-3D matching network that directly matches the LiDAR point clouds and satellite images through end-to-end learning. Without the need for feature point detection, D-GLSNet provides accurate pixel-to-point association between the LiDAR point clouds and satellite images. And then, we can easily calculate the horizontal offset (Δx,Δy) and angular deviation Δθ(yaw) between them, thereby achieving accurate registration. Extensive experiments on the KITTI dataset show that our D-GLSNet method achieves a mean Relative Translation Error (RTE) of 1.43 m.
+D-GLSNet is a Transformer-based 2D-3D matching network that directly matches the LiDAR point clouds and satellite images through end-to-end learning. Without the need for feature point detection, D-GLSNet provides accurate pixel-to-point association between the LiDAR point clouds and satellite images. And then, we can easily calculate the horizontal offset (Δx,Δy) and angular deviation Δθ(yaw) between them, thereby achieving accurate registration. 
 ![match](./doc/match.png)
 
 ## Installation
@@ -24,7 +24,7 @@ python setup.py build develop
 ![match](./doc/D-GLSNet.jpg)
 
 ## Dateset
-Our data is based on Kitti and Kitti-360, and we provide a simple example data on Kitti.
+Our data is based on Kitti and Kitti-360, and we provide a [simple](https://drive.google.com/file/d/1nF-jVGkeER0fBjYo8ddrA7ghFQf6kjjv/view?usp=drive_link) example data on Kitti.
 ```
 sample
 ├── train.txt
@@ -38,7 +38,7 @@ sample
 
 ```
 
-Each. npz file contains four arrays:
+Each `.npz` file contains four arrays:
 * Point: LiDAR point cloud;
 * Map_: Google Map of the current frame LiDAR point cloud attachment;
 * Scale: The scale of Google Maps;
@@ -50,11 +50,11 @@ Modify the `run_path` in the configuration file **default_kitti.yaml** to modify
 CUDA_VISIBLE_DEVICES=0 python train.py pl_DGLSNet ./config/default_kitti.yaml kitt_train
 ```
 
-* 
+* In addition, you need to set `use_augmentation` to True to enable data augmentation.
 
 ## Test
 
-Modify `pretrained` in the default_kitti.yaml file to load the corresponding model. Use the following command for testing.
+Modify `pretrained` in the default_kitti.yaml file to load the corresponding model. You can download our pretrained models [Medium(4,2).ckpt](https://drive.google.com/file/d/1jsD-0Jv2-ik5yU-QfcI00NI-K57Zqb-e/view?usp=sharing). Use the following command for testing.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python train.py pl_DGLSNet ./config/default_kitti.yaml kitt_train --test

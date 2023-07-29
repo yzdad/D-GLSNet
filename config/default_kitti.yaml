@@ -1,4 +1,4 @@
-pretrained: '/media/yzdad/datasets/数据包/Medium(4,2).ckpt'
+pretrained: '/media/yzdad/datasets/Medium(4,2).ckpt'
 run_path: '/media/yzdad/datasets/run/D-GLSNet'
 
 workers_train: 6
@@ -14,7 +14,7 @@ max_epochs: 100
 
 data:
   dataset: Kitti
-  dataset_root: '/media/yzdad/datasets/数据包/sample'
+  dataset_root: '/media/yzdad/datasets/sample'
   point_limit: 30000
   use_augmentation: False
   augmentation_noise: 0.001
